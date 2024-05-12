@@ -1,14 +1,16 @@
+import type { Either } from "Either"
 import type { Error } from "IO"
 
-import type { MadJson } from "@/Parse"
+import type { MadJson, MadPackage } from "@/Parse"
 
+import { Left, Right, mapLeft } from "Either"
 import File from "File"
 import IO from "IO"
 import { parse } from "Json/Parse"
 import Process from "Process"
 import Wish from "Wish"
 
-import { madJson } from "@/Parse"
+import { madJson, unpack } from "@/Parse"
 
 
 
@@ -35,8 +37,13 @@ import { madJson } from "@/Parse"
 */
 // walk the dependencies and for each, determine if there's a need to replace
 
-readMadlibJson :: String -> Wish Error MadJson
-export readMadlibJson = pipe(
+readMadlibJson :: String -> Wish Error MadPackage
+export readMadlibJson = (source) => pipe(
   File.read,
-  map(parse(madJson)),
-)
+  map(
+    pipe(
+      parse(madJson),
+      unpack,
+    ),
+  ),
+)(source)

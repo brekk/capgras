@@ -14,8 +14,8 @@ import { madJson } from "@/Parse"
 main = (argv) => {
   pipe(
     List.nth(1),
-    fromMaybe(Wish.bad(IO.UnknownError)),
     map(readMadlibJson),
+    fromMaybe(Wish.bad(IO.UnknownError)),
     Wish.fulfill((e) => { IO.trace("ERROR", e) }, (x) => { IO.trace("SUCCESS", x) }),
   )(argv)
 }

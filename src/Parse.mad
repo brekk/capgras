@@ -1,7 +1,9 @@
+import type { Either } from "Either"
 import type { Maybe } from "Maybe"
 
 import type { Dependency } from "@/Dependency"
 
+import { Left, Right } from "Either"
 import Json from "Json/Parse"
 
 
@@ -12,15 +14,15 @@ export alias MadJson = {
   version :: String,
 }
 
-concreteMadJson :: String -> String -> Maybe (List Dependency) -> MadJson
-concreteMadJson = (name, version, dependencies) => ({ name, version, dependencies })
+__json :: String -> String -> Maybe (List Dependency) -> MadJson
+__json = (name, version, dependencies) => ({ name, version, dependencies })
 
-concreteMadDependency :: String -> String -> String -> Dependency
-concreteMadDependency = (minVersion, url, description) => ({ minVersion, url, description })
+__dependency :: String -> String -> String -> Dependency
+__dependency = (minVersion, url, description) => ({ minVersion, url, description })
 
 madJson :: Json.Parser MadJson
 export madJson = Json.map3(
-  concreteMadJson,
+  __json,
   Json.field("name", Json.string),
   Json.field("version", Json.string),
   Json.maybe(
@@ -28,7 +30,7 @@ export madJson = Json.map3(
       "dependencies",
       Json.list(
         Json.map3(
-          concreteMadDependency,
+          __dependency,
           Json.field("minVersion", Json.string),
           Json.field("url", Json.string),
           Json.field("description", Json.string),
@@ -37,3 +39,14 @@ export madJson = Json.map3(
     ),
   ),
 )
+
+export type MadPackage = Unparsed(String) | ParsedMadPackage(MadJson)
+
+unpack :: Either String MadJson -> MadPackage
+export unpack = where {
+  Left(l) =>
+    Unparsed(l)
+
+  Right(r) =>
+    ParsedMadPackage(r)
+}
