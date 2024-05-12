@@ -29,7 +29,7 @@ backspaceWithLabel = (label, buffer) => {
   buffer.pop()
   restoreCursor()
   eraseAfterCursor()
-  IO.put(label ++ buffer.get())
+  IO.put(buffer.get())
 }
 
 prompt :: String -> Buffer String -> Wish String String
