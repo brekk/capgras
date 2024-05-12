@@ -1,0 +1,39 @@
+import type { Maybe } from "Maybe"
+
+import type { Dependency } from "@/Dependency"
+
+import Json from "Json/Parse"
+
+
+
+export alias MadJson = {
+  dependencies :: Maybe (List Dependency),
+  name :: String,
+  version :: String,
+}
+
+concreteMadJson :: String -> String -> Maybe (List Dependency) -> MadJson
+concreteMadJson = (name, version, dependencies) => ({ name, version, dependencies })
+
+concreteMadDependency :: String -> String -> String -> Dependency
+concreteMadDependency = (minVersion, url, description) => ({ minVersion, url, description })
+
+madJson :: Json.Parser MadJson
+export madJson = Json.map3(
+  concreteMadJson,
+  Json.field("name", Json.string),
+  Json.field("version", Json.string),
+  Json.maybe(
+    Json.field(
+      "dependencies",
+      Json.list(
+        Json.map3(
+          concreteMadDependency,
+          Json.field("minVersion", Json.string),
+          Json.field("url", Json.string),
+          Json.field("description", Json.string),
+        ),
+      ),
+    ),
+  ),
+)

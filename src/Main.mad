@@ -1,0 +1,21 @@
+import File from "File"
+import IO from "IO"
+import JP from "Json/Parse"
+import List from "List"
+import { fromMaybe } from "Maybe"
+import Process from "Process"
+import Wish from "Wish"
+
+import { readMadlibJson } from "@/Capgras"
+import { madJson } from "@/Parse"
+
+
+
+main = (argv) => {
+  pipe(
+    List.nth(1),
+    fromMaybe(Wish.bad(IO.UnknownError)),
+    map(readMadlibJson),
+    Wish.fulfill((e) => { IO.trace("ERROR", e) }, (x) => { IO.trace("SUCCESS", x) }),
+  )(argv)
+}

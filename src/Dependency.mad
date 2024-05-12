@@ -1,0 +1,1 @@
+export alias Dependency = { description :: String, minVersion :: String, url :: String }

@@ -1,0 +1,42 @@
+import type { Error } from "IO"
+
+import type { MadJson } from "@/Parse"
+
+import File from "File"
+import IO from "IO"
+import { parse } from "Json/Parse"
+import Process from "Process"
+import Wish from "Wish"
+
+import { madJson } from "@/Parse"
+
+
+
+// read a madlib.json file like:
+/*
+{
+  "name": "MadDoc",
+  "version": "0.0.7",
+  "madlibVersion": "0.23.14",
+  "main": "src/Main.mad",
+  "dependencies": [
+    {
+      "minVersion": "2.0.2",
+      "url": "https://github.com/madlib-lang/madmarkdown-renderer/archive/refs/tags/v2.0.2.zip",
+      "description": "MadMarkdownRenderer"
+    },
+    {
+      "minVersion": "7.0.2",
+      "url": "https://github.com/madlib-lang/madui/archive/refs/tags/v7.0.2.zip",
+      "description": "MadUI"
+    }
+  ]
+}
+*/
+// walk the dependencies and for each, determine if there's a need to replace
+
+readMadlibJson :: String -> Wish Error MadJson
+export readMadlibJson = pipe(
+  File.read,
+  map(parse(madJson)),
+)
