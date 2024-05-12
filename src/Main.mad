@@ -6,16 +6,30 @@ import { fromMaybe } from "Maybe"
 import Process from "Process"
 import Wish from "Wish"
 
+import Buffer from "@/Buffer"
 import { readMadlibJson } from "@/Capgras"
+import { clear, prompt } from "@/Feedback"
 import { madJson } from "@/Parse"
 
 
 
+printAndKill :: Show a => String -> a -> {}
+printAndKill = (p, x) => {
+  clear()
+  IO.trace(p, x)
+  Process.exit(0)
+}
+
 main = (argv) => {
+  b = Buffer.make("")
   pipe(
-    List.nth(1),
-    map(readMadlibJson),
-    fromMaybe(Wish.bad(IO.UnknownError)),
-    Wish.fulfill((e) => { IO.trace("ERROR", e) }, (x) => { IO.trace("SUCCESS", x) }),
-  )(argv)
+    prompt("Favorite color?"),
+    Wish.fulfill(printAndKill("ERROR"), printAndKill("OUTPUT")),
+  )(b)
+  // pipe(
+  //   List.nth(1),
+  //   map(readMadlibJson),
+  //   fromMaybe(Wish.bad(IO.UnknownError)),
+  //   Wish.fulfill((e) => { IO.trace("ERROR", e) }, (x) => { IO.trace("SUCCESS", x) }),
+  // )(argv)
 }

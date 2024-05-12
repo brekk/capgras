@@ -14,11 +14,15 @@ export alias MadJson = {
   version :: String,
 }
 
+// concrete function results
+
 __json :: String -> String -> Maybe (List Dependency) -> MadJson
 __json = (name, version, dependencies) => ({ name, version, dependencies })
 
 __dependency :: String -> String -> String -> Dependency
 __dependency = (minVersion, url, description) => ({ minVersion, url, description })
+
+// parser
 
 madJson :: Json.Parser MadJson
 export madJson = Json.map3(
@@ -40,13 +44,7 @@ export madJson = Json.map3(
   ),
 )
 
-export type MadPackage = Unparsed(String) | ParsedMadPackage(MadJson)
+export alias MadPackage = Either String MadJson
 
-unpack :: Either String MadJson -> MadPackage
-export unpack = where {
-  Left(l) =>
-    Unparsed(l)
-
-  Right(r) =>
-    ParsedMadPackage(r)
-}
+madParse :: String -> MadPackage
+export madParse = Json.parse(madJson)

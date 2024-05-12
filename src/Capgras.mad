@@ -10,7 +10,7 @@ import { parse } from "Json/Parse"
 import Process from "Process"
 import Wish from "Wish"
 
-import { madJson, unpack } from "@/Parse"
+import { madParse } from "@/Parse"
 
 
 
@@ -40,10 +40,5 @@ import { madJson, unpack } from "@/Parse"
 readMadlibJson :: String -> Wish Error MadPackage
 export readMadlibJson = (source) => pipe(
   File.read,
-  map(
-    pipe(
-      parse(madJson),
-      unpack,
-    ),
-  ),
+  map(madParse),
 )(source)

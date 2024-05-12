@@ -1,0 +1,23 @@
+import String from "String"
+
+
+
+alias Stack a = { clear :: {} -> {}, get :: {} -> a, pop :: {} -> {}, push :: a -> a }
+
+make :: String -> Stack String
+export make = (initial) => {
+  buff = initial
+  return {
+    clear: () => {
+      buff := ""
+    },
+    get: () => buff,
+    pop: () => {
+      buff := String.dropLast(1, buff)
+    },
+    push: (str) => {
+      buff := buff ++ str
+      return str
+    },
+  }
+}

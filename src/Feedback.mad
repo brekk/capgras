@@ -1,0 +1,62 @@
+import type { Wish } from "Wish"
+
+import type { Buffer } from "@/Buffer"
+
+import IO from "IO"
+import Process from "Process"
+import Terminal from "Terminal"
+import { Wish } from "Wish"
+
+
+
+ESC = { CTRL_C: "\x03", BACKSPACE: "\x7F", ENTER: "\r" }
+
+clear :: {} -> {}
+export clear = () => IO.put("\x1b[2J\x1b[H")
+
+
+saveCursor :: {} -> {}
+export saveCursor = () => IO.put("\x1b7")
+
+restoreCursor :: {} -> {}
+export restoreCursor = () => IO.put("\x1b8")
+
+eraseAfterCursor :: {} -> {}
+export eraseAfterCursor = () => IO.put("\x1b[0J")
+
+backspaceWithLabel :: String -> Buffer String -> {}
+backspaceWithLabel = (label, buffer) => {
+  buffer.pop()
+  restoreCursor()
+  eraseAfterCursor()
+  IO.put(label ++ buffer.get())
+}
+
+prompt :: String -> Buffer String -> Wish String String
+export prompt = (label, buffer) => {
+  Terminal.enableTTYRawMode()
+  IO.put(label ++ " ")
+  saveCursor()
+  return Wish(
+    (die, succeed) => {
+      Terminal.onKeyPressed(
+        (seq) => {
+          if (seq == ESC.CTRL_C) do {
+            // CTRL + C
+            IO.putLine("Quitting!")
+            die("Quitting!")
+            Process.exit(0)
+          } else if (seq == ESC.BACKSPACE) {
+            backspaceWithLabel(label, buffer)
+          } else if (seq == ESC.ENTER) {
+            succeed(buffer.get())
+          } else do {
+            IO.put(seq)
+            buffer.push(seq)
+          }
+        },
+      )
+      return () => {}
+    },
+  )
+}
