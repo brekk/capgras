@@ -32,7 +32,7 @@ jobs:
     needs: check-version
     runs-on: ubuntu-latest
     steps:
-      - uses: madlib-lang/action-publish
+      - uses: madlib-lang/action-publish@v1
         with:
           version: ${{ github.event.inputs.version }}
 
