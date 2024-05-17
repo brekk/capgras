@@ -1,2 +1,6 @@
 .DS_Store
 build
+.module_cache
+madlib_modules
+.coverage
+.tests

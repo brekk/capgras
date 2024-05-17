@@ -10,14 +10,18 @@ import Json from "Json/Parse"
 
 export alias MadJson = {
   dependencies :: Maybe (List Dependency),
+  madlibVersion :: Maybe String,
+  main :: String,
   name :: String,
   version :: String,
 }
 
 // concrete function results
 
-__json :: String -> String -> Maybe (List Dependency) -> MadJson
-__json = (name, version, dependencies) => ({ name, version, dependencies })
+__json :: String -> String -> String -> Maybe String -> Maybe (List Dependency) -> MadJson
+__json = (name, version, main, madlibVersion, dependencies) => (
+  { main, madlibVersion, name, version, dependencies }
+)
 
 __dependency :: String -> String -> String -> Dependency
 __dependency = (minVersion, url, description) => ({ minVersion, url, description })
@@ -25,10 +29,12 @@ __dependency = (minVersion, url, description) => ({ minVersion, url, description
 // parser
 
 madJson :: Json.Parser MadJson
-export madJson = Json.map3(
+export madJson = Json.map5(
   __json,
   Json.field("name", Json.string),
   Json.field("version", Json.string),
+  Json.field("main", Json.string),
+  Json.maybe(Json.field("madlibVersion", Json.string)),
   Json.maybe(
     Json.field(
       "dependencies",

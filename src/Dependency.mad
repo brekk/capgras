@@ -1,1 +1,3 @@
 export alias Dependency = { description :: String, minVersion :: String, url :: String }
+
+export alias DependencyMap = Dictionary String String

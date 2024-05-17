@@ -1,3 +1,6 @@
+import { prompt } from "Clinic"
+import Buffer from "Clinic/Buffer"
+import { clear } from "Clinic/Constants"
 import File from "File"
 import IO from "IO"
 import JP from "Json/Parse"
@@ -6,9 +9,7 @@ import { fromMaybe } from "Maybe"
 import Process from "Process"
 import Wish from "Wish"
 
-import Buffer from "@/Buffer"
-import { readMadlibJson } from "@/Capgras"
-import { clear, prompt } from "@/Feedback"
+import { processDependencies, readMadlibJson } from "@/Capgras"
 import { madJson } from "@/Parse"
 
 
@@ -19,17 +20,26 @@ printAndKill = (p, x) => {
   IO.trace(p, x)
   Process.exit(0)
 }
-
-main = (argv) => {
+/*
   b = Buffer.make("")
   pipe(
     prompt("Favorite color?"),
     Wish.fulfill(printAndKill("ERROR"), printAndKill("OUTPUT")),
   )(b)
+  */
+main = (argv) => {
   // pipe(
   //   List.nth(1),
-  //   map(readMadlibJson),
+  //   map(
+  //     readMadlibJson,
+  //     map(
+  //       pipe(
+  //         .dependencies,
+  //         processDependencies,
+  //       ),
+  //     ),
+  //   ),
   //   fromMaybe(Wish.bad(IO.UnknownError)),
-  //   Wish.fulfill((e) => { IO.trace("ERROR", e) }, (x) => { IO.trace("SUCCESS", x) }),
+  //   Wish.fulfill((e) => { IO.pTrace("ERROR", e) }, (x) => { IO.pTrace("SUCCESS", x) }),
   // )(argv)
 }

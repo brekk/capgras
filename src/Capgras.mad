@@ -1,12 +1,19 @@
 import type { Either } from "Either"
 import type { Error } from "IO"
+import type { Maybe } from "Maybe"
 
+import type { Dependency, DependencyMap } from "@/Dependency"
 import type { MadJson, MadPackage } from "@/Parse"
 
+import { prompt } from "Clinic"
+import Buffer from "Clinic/Buffer"
+import Dict from "Dictionary"
 import { Left, Right, mapLeft } from "Either"
 import File from "File"
+import Fn from "Function"
 import IO from "IO"
 import { parse } from "Json/Parse"
+import { Just, Nothing } from "Maybe"
 import Process from "Process"
 import Wish from "Wish"
 
@@ -42,3 +49,26 @@ export readMadlibJson = (source) => pipe(
   File.read,
   map(madParse),
 )(source)
+
+processDependencies :: List (Maybe Dependency) -> Wish Error DependencyMap
+export processDependencies = pipe(
+  map(processDependency),
+  Wish.parallel,
+  map(Dict.fromList),
+)
+
+processDependency :: Maybe Dependency -> Wish Error #[String, String]
+export processDependency = (maybeDep) => pipe(
+  where {
+    Nothing =>
+      Wish.bad(IO.UnknownError)
+
+    Just(raw) =>
+      pipe(
+        .description,
+        prompt($, Buffer.make(raw.url)),
+        map((url) => #[raw.description, url]),
+        Wish.mapRej(Fn.always(IO.UnknownError)),
+      )(raw)
+  },
+)(maybeDep)
