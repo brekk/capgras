@@ -12,23 +12,18 @@ import { processDependencies, processDependency, readMadlibJson } from "./Capgra
 test(
   "readMadlibJson",
   () => do {
-    consumer = where {
-      Right(r) =>
-        do {
-          IO.trace("RAW", r)
-          return Just(r)
-        }
-
-      _ =>
-        Nothing
-    }
     x = assertEquals(false, false)
     pipe(
-      IO.trace("location!"),
       readMadlibJson,
-      map(IO.trace("parsed?")),
-      map(consumer),
-      map(IO.trace("consumed?")),
+      map(
+        where {
+          Right(r) =>
+            Just(r)
+
+          _ =>
+            Nothing
+        },
+      ),
       Wish.fulfill(
         () => {},
         (r) => {
@@ -61,4 +56,17 @@ test(
 )
 
 // test("processDependencies", () => assertEquals(processDependencies, ))
-// test("processDependency", () => assertEquals(processDependency, ))
+/*
+test("processDependency", () => do {
+  assertion = assertEquals(true, false)
+  dep = Just({
+    minVersion: "0.0.3",
+    url: "https://madlib.space",
+    description: "cool"
+  })
+  return pipe(
+    processDependency,
+
+  )(dep)
+})
+*/
